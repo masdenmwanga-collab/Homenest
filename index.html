@@ -377,7 +377,8 @@ a.btn{display:flex;align-items:center;justify-content:center;text-decoration:non
     <div id="tabRe" hidden>
       <p id="rvSum" style="color:var(--text)"></p>
       <div id="rvList"></div>
-      <h2 style="margin:18px 0 10px">Write a review</h2>
+      <h2 id="rvH" style="margin:18px 0 10px">Write a review</h2>
+      <p class="sub" id="rvLock" hidden>To keep reviews honest, you can review a home after you have messaged the landlord about it.</p>
       <form id="rvForm" novalidate>
         <label for="rv-star">Your rating</label>
         <select id="rv-star"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select>
@@ -544,6 +545,7 @@ let profile = null;
 async function showHome(p) {
   profile = p;
   if (await isAdmin(p.id)) return show("aHome");
+  if (p.suspended) { alert("This account has been suspended. Please contact support."); await sb.auth.signOut(); return show("welcome"); }
   listen(); refreshUnread();
   const first = (p.full_name || "").trim().split(/\s+/)[0] || "there";
   if (p.role === "tenant") {
@@ -867,7 +869,9 @@ async function showBiz(id) {
   $("#bzName").textContent = nm; $("#bzBio").textContent = b.bio || ""; $("#bzAreas").textContent = b.areas ? "Serves " + b.areas : "";
   const av = $("#bzAv"); av.replaceChildren();
   if (b.logo_url) { const im = el("img"); im.alt = ""; im.src = b.logo_url; av.append(im); } else av.textContent = nm[0].toUpperCase();
-  const { data: hs } = await sb.from("houses").select("*").eq("landlord_id", id).eq("status", "vacant").order("created_at", { ascending: false });
+  const sess = (await sb.auth.getSession()).data.session;
+  const cols = sess ? "*" : "id,landlord_id,title,description,house_type,price,area,facilities,status,photo_urls,created_at,verified";
+  const { data: hs } = await sb.from("houses").select(cols).eq("landlord_id", id).eq("status", "vacant").order("created_at", { ascending: false });
   $("#bzList").replaceChildren(...((hs && hs.length) ? hs.map(bzCard) : [el("p", "", "No vacant houses right now. Check back soon.")]));
 }
 function bzCard(h) {
@@ -876,11 +880,15 @@ function bzCard(h) {
   const i = el("div", "i");
   const m = el("div", "m"); m.innerHTML = svg("pin"); m.append(h.area + " · " + h.house_type);
   const a = el("div", "acts");
-  const call = el("a", "sm pr", "Call"); call.href = "tel:" + h.contact_phone.replace(/\s/g, "");
-  const chat = el("a", "sm", "WhatsApp"); chat.href = "https://wa.me/" + wa(h.contact_phone); chat.target = "_blank"; chat.rel = "noopener";
-  call.onclick = () => sb.from("house_events").insert({ house_id: h.id, kind: "call" });
-  chat.onclick = () => sb.from("house_events").insert({ house_id: h.id, kind: "whatsapp" });
-  a.append(call, chat);
+  if (h.contact_phone) {
+    const call = el("a", "sm pr", "Call"); call.href = "tel:" + h.contact_phone.replace(/\s/g, "");
+    const chat = el("a", "sm", "WhatsApp"); chat.href = "https://wa.me/" + wa(h.contact_phone); chat.target = "_blank"; chat.rel = "noopener";
+    call.onclick = () => sb.from("house_events").insert({ house_id: h.id, kind: "call" });
+    chat.onclick = () => sb.from("house_events").insert({ house_id: h.id, kind: "whatsapp" });
+    a.append(call, chat);
+  } else {
+    const si = el("button", "sm pr", "Sign in to contact"); si.type = "button"; si.onclick = () => show("login"); a.append(si);
+  }
   i.append(el("b", "", h.title), el("div", "p", money(h.price) + "/mo"), m, a);
   c.append(img, i); return c;
 }
@@ -978,6 +986,12 @@ document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click",
 $("#dCall").addEventListener("click", () => sb.from("house_events").insert({ house_id: curHouse.id, kind: "call" }));
 $("#dWa").addEventListener("click", () => sb.from("house_events").insert({ house_id: curHouse.id, kind: "whatsapp" }));
 
+async function canReview() {
+  const c = await sb.from("conversations").select("id").eq("house_id", curHouse.id).eq("tenant_id", profile.id).maybeSingle();
+  if (!c.data) return false;
+  const { count } = await sb.from("messages").select("*", { count: "exact", head: true }).eq("conversation_id", c.data.id).eq("sender_id", profile.id);
+  return (count || 0) > 0;
+}
 async function loadReviews() {
   const { data } = await sb.from("public_reviews").select("*").eq("house_id", curHouse.id).order("created_at", { ascending: false });
   const rs = data || [], avg = rs.length ? rs.reduce((a, x) => a + x.rating, 0) / rs.length : 0;
@@ -986,6 +1000,8 @@ async function loadReviews() {
     const c = el("div", "rev"), t = el("div", "row"); t.append(el("b", "", r.author || "Tenant"), el("span", "sub", "★ " + r.rating));
     c.append(t, el("p", "", r.comment), el("div", "sub", dfmt(r.created_at))); return c;
   }));
+  const ok = await canReview();
+  $("#rvForm").hidden = !ok; $("#rvH").hidden = !ok; $("#rvLock").hidden = ok;
 }
 $("#rvForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -994,7 +1010,7 @@ $("#rvForm").addEventListener("submit", async e => {
   btn.disabled = true;
   const { error } = await sb.from("reviews").insert({ house_id: curHouse.id, user_id: profile.id, rating: parseInt($("#rv-star").value, 10), comment });
   btn.disabled = false;
-  if (error) return say(msg, error.code === "23505" ? "You have already reviewed this home." : "Could not post your review. Try again.");
+  if (error) return say(msg, error.code === "23505" ? "You have already reviewed this home." : error.code === "42501" ? "You can review this home after you message the landlord." : "Could not post your review. Try again.");
   $("#rv-text").value = ""; say(msg, "Thank you. Your review is posted.", true); loadReviews();
 });
 $("#reportBtn").addEventListener("click", async () => {
