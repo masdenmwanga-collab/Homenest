@@ -133,7 +133,7 @@ a.btn{display:flex;align-items:center;justify-content:center;text-decoration:non
 .dprice{font-size:22px;font-weight:700;margin:6px 0}
 .lrow{display:flex;align-items:center;gap:12px;margin:14px 0}
 .lrow .av{width:44px;height:44px;font-size:18px}
-.cta{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,100%);display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 20px;background:var(--bg);border-top:1px solid var(--line);z-index:5}
+.cta{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,100%);display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px;padding:12px 20px;background:var(--bg);border-top:1px solid var(--line);z-index:5}
 .cta .btn{margin:0}
 .rev{border-top:1px solid var(--line);padding:12px 0}
 .rev p{margin:4px 0;color:var(--text)}
@@ -144,6 +144,34 @@ a.btn{display:flex;align-items:center;justify-content:center;text-decoration:non
 #h-existing{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 14px}
 .more{margin:10px 0 0}
 .more summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:#7FA6FF;font-weight:700;font-size:14px}
+.bnav button{position:relative}
+.bnav .badge{position:absolute;top:4px;left:calc(50% + 4px);min-width:18px;height:18px;border-radius:9px;background:#FF5A5A;color:#fff;font:700 11px/18px 'Plus Jakarta Sans',system-ui,sans-serif;text-align:center;padding:0 5px;font-style:normal}
+.crow{position:relative;display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:10px;color:var(--text);cursor:pointer}
+.crow .av{width:46px;height:46px;font-size:18px;flex:none}
+.crow .ct{flex:1;min-width:0}
+.crow .ct .row{margin:0}
+.crow .pv{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dot{min-width:22px;height:22px;border-radius:11px;background:var(--blue);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;padding:0 6px}
+#chat{padding:0;height:100dvh}
+.chead{position:relative;display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.chead .back{margin:0}
+.cwho{flex:1;min-width:0}
+.cwho b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cwho span{display:block;margin:0;font-size:12px;color:var(--muted)}
+#cMenu{top:56px;right:12px}
+.cmsgs{flex:1;overflow-y:auto;padding:12px 16px}
+.bub{max-width:78%;width:fit-content;padding:9px 12px;border-radius:16px;margin:0 0 8px;font-size:15px;overflow-wrap:anywhere}
+.bub.me{margin-left:auto;background:var(--blue);color:#fff;border-bottom-right-radius:4px}
+.bub.them{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px}
+.bub img{display:block;max-width:100%;border-radius:10px;margin-bottom:4px}
+.bub small{display:block;font-size:11px;opacity:.75;margin-top:2px}
+.cform{display:flex;gap:8px;align-items:center;padding:10px 12px;border-top:1px solid var(--line);background:var(--bg)}
+.cform input[type=text]{margin:0;height:46px;flex:1;min-width:0}
+.cform .att{position:relative;flex:none;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text);display:grid;place-items:center;cursor:pointer;margin:0}
+.cform .att svg{width:22px;height:22px}
+.cform .att input{position:absolute;opacity:0;width:1px;height:1px}
+.cform .att:focus-within{outline:3px solid #7FA6FF;outline-offset:2px}
+.cform .send{flex:none;height:46px;padding:0 18px;border-radius:999px;border:0;background:var(--blue);color:#fff;font-weight:700;cursor:pointer}
 .loc{position:relative}
 .loc svg{position:absolute;left:14px;top:16px;width:20px;height:20px;color:var(--muted)}
 .loc input{padding-left:42px}
@@ -361,7 +389,7 @@ a.btn{display:flex;align-items:center;justify-content:center;text-decoration:non
       <button class="link" id="reportBtn" type="button">Report this listing</button>
     </div>
   </div>
-  <div class="cta"><a class="btn primary glow" id="dCall">Call</a><a class="btn glow" id="dWa" target="_blank" rel="noopener">WhatsApp</a></div>
+  <div class="cta"><button class="btn primary glow" id="dMsg" type="button">Message</button><a class="btn glow" id="dCall">Call</a><a class="btn glow" id="dWa" target="_blank" rel="noopener">WhatsApp</a></div>
 </section>
 
 <section class="screen withnav" id="tSaved" aria-label="Saved homes">
@@ -436,6 +464,27 @@ a.btn{display:flex;align-items:center;justify-content:center;text-decoration:non
   </form>
 </section>
 
+<section class="screen withnav" id="msgList" aria-label="Messages">
+  <h1>Messages</h1>
+  <div id="convBox" aria-live="polite"></div>
+  <div class="navslot" data-nav="msgList"></div>
+</section>
+
+<section class="screen" id="chat" aria-label="Conversation">
+  <div class="chead">
+    <button class="back" id="chatBack" aria-label="Back to messages">&#8592;</button>
+    <div class="cwho"><b id="cName"></b><span id="cHouse"></span></div>
+    <button class="iconbtn" id="cMenuBtn" aria-label="Conversation options">&#8942;</button>
+    <div class="menu" id="cMenu" hidden><button type="button" id="cReport">Report conversation</button><button type="button" class="d" id="cBlock">Block user</button></div>
+  </div>
+  <div class="cmsgs" id="cMsgs" aria-live="polite"></div>
+  <form class="cform" id="cForm" novalidate>
+    <label class="att" aria-label="Send a photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 16l-5-5L5 21"/></svg><input id="cFile" type="file" accept="image/*"></label>
+    <input id="cText" type="text" maxlength="2000" placeholder="Type a message" aria-label="Type a message" autocomplete="off">
+    <button class="send" type="submit">Send</button>
+  </form>
+</section>
+
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
@@ -454,6 +503,8 @@ document.title = BRAND;
 function show(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === id));
   window.scrollTo(0, 0);
+  buildNavs();
+  if (id === "msgList") loadConvs();
   if (id === "tSaved") loadSaved();
   if (id === "aHome") adminOverview();
   if (id === "aList") adminListings();
@@ -493,6 +544,7 @@ let profile = null;
 async function showHome(p) {
   profile = p;
   if (await isAdmin(p.id)) return show("aHome");
+  listen(); refreshUnread();
   const first = (p.full_name || "").trim().split(/\s+/)[0] || "there";
   if (p.role === "tenant") {
     $("#tHello").textContent = "Hello, " + first; $("#tpName").textContent = p.full_name || ""; $("#tpPhone").textContent = p.phone || ""; $("#tpAv").textContent = (first[0] || "?").toUpperCase();
@@ -548,7 +600,7 @@ $("#loginForm").addEventListener("submit", async e => {
 });
 
 $("#logout").addEventListener("click", async () => {
-  await sb.auth.signOut();
+  await sb.auth.signOut(); sb.removeAllChannels(); chan = null; unread = 0;
   show("welcome");
 });
 
@@ -568,6 +620,7 @@ const IC = {
   home: '<path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z"/>',
   list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  chat: '<path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1.1-4.4A8 8 0 1 1 21 12z"/>',
   flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
   star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
   heart: '<path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/>',
@@ -575,11 +628,18 @@ const IC = {
 };
 const svg = k => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + IC[k] + '</svg>';
 
-document.querySelectorAll(".navslot").forEach(n => {
-  n.className = "bnav";
-  n.innerHTML = (n.dataset.nav.startsWith("a") ? [["home", "Overview", "aHome"], ["list", "Listings", "aList"], ["flag", "Reports", "aRep"], ["user", "Users", "aUsers"], ["star", "Reviews", "aRev"]] : n.dataset.nav.startsWith("ld") ? [["home", "Home", "ldHome"], ["list", "Listings", "ldList"], ["user", "Profile", "ldProfile"]] : [["home", "Home", "tHome"], ["heart", "Saved", "tSaved"], ["user", "Profile", "tProfile"]])
-    .map(([k, l, t]) => '<button type="button" class="' + (t === n.dataset.nav ? "on" : "") + '" data-go="' + t + '">' + svg(k) + "<span>" + l + "</span></button>").join("");
-});
+const ADMIN_NAV = [["home", "Overview", "aHome"], ["list", "Listings", "aList"], ["flag", "Reports", "aRep"], ["user", "Users", "aUsers"], ["star", "Reviews", "aRev"]];
+const LD_NAV = [["home", "Home", "ldHome"], ["list", "Listings", "ldList"], ["chat", "Messages", "msgList"], ["user", "Profile", "ldProfile"]];
+const T_NAV = [["home", "Home", "tHome"], ["chat", "Messages", "msgList"], ["heart", "Saved", "tSaved"], ["user", "Profile", "tProfile"]];
+function buildNavs() {
+  document.querySelectorAll(".navslot").forEach(n => {
+    const k = n.dataset.nav, ld = profile ? profile.role === "landlord" : k.startsWith("ld");
+    n.className = "bnav";
+    n.innerHTML = (k.startsWith("a") ? ADMIN_NAV : ld ? LD_NAV : T_NAV).map(([ic, l, t]) =>
+      '<button type="button" class="' + (t === k ? "on" : "") + '" data-go="' + t + '">' + svg(ic) + "<span>" + l + "</span>" + (t === "msgList" ? '<i class="badge" hidden></i>' : "") + "</button>").join("");
+  });
+  paintBadge();
+}
 
 let myHouses = [], filter = "all";
 
@@ -1007,13 +1067,18 @@ async function adminReports() {
   const box = $("#aRepBox");
   const { data, error } = await sb.from("reports").select("*, houses(id,title,photo_urls), profiles(full_name)").eq("status", "open").order("created_at", { ascending: false }).limit(100);
   if (error) return none(box, "Could not load reports: " + error.message);
-  if (!data.length) return none(box, "No open reports. Nice work.");
-  box.replaceChildren(...data.map(r => {
+  const cr = await sb.from("message_reports").select("*").eq("status", "open").order("created_at", { ascending: false }).limit(50);
+  const cards = (cr.data || []).map(r => acard(null, "Chat report", ["Reason: " + r.reason, "Messages: " + (r.evidence || "").replace(/\n/g, " | ").slice(0, 400), dfmt(r.created_at)], [],
+    [["Dismiss report", async () => { await sb.from("message_reports").update({ status: "resolved" }).eq("id", r.id); await audit("Dismissed chat report", "chat"); adminReports(); }],
+     ["Suspend reported user", async () => { if (!confirm("Suspend this user? Their listings will be hidden.")) return; await sb.rpc("admin_set_suspended", { target: r.reported_id, v: true }); await sb.from("message_reports").update({ status: "resolved" }).eq("id", r.id); await audit("Suspended user from chat report", "chat"); adminReports(); }, true]]));
+  data.forEach(r => {
     const h = r.houses, who = (r.profiles && r.profiles.full_name) || "A tenant";
     const items = [["Dismiss report", async () => { await sb.from("reports").update({ status: "resolved" }).eq("id", r.id); await audit("Dismissed report", h ? h.title : "listing"); adminReports(); }]];
     if (h) items.push(["Remove listing", () => removeHouse(h, adminReports), true]);
-    return acard(h && h.photo_urls && h.photo_urls[0], h ? h.title : "Listing already removed", ["Reason: " + r.reason, "Reported by " + who + " · " + dfmt(r.created_at)], [], items);
-  }));
+    cards.push(acard(h && h.photo_urls && h.photo_urls[0], h ? h.title : "Listing already removed", ["Reason: " + r.reason, "Reported by " + who + " · " + dfmt(r.created_at)], [], items));
+  });
+  if (!cards.length) return none(box, "No open reports. Nice work.");
+  box.replaceChildren(...cards);
 }
 
 async function adminUsers() {
@@ -1104,6 +1169,94 @@ $("#tForm").addEventListener("submit", async e => {
   $("#tpName").textContent = name; $("#tpPhone").textContent = phone; $("#tpAv").textContent = (name[0] || "?").toUpperCase();
   $("#tHello").textContent = "Hello, " + name.split(/\s+/)[0];
   show("tProfile");
+});
+
+let unread = 0, chan = null, cur = null;
+const tfmt = d => { const x = new Date(d), n = new Date(); return x.toDateString() === n.toDateString() ? x.toLocaleTimeString("en-KE", { hour: "2-digit", minute: "2-digit" }) : x.toLocaleDateString("en-KE", { day: "numeric", month: "short" }); };
+async function refreshUnread() {
+  const { count } = await sb.from("messages").select("*", { count: "exact", head: true }).is("read_at", null).neq("sender_id", profile.id);
+  unread = count || 0; paintBadge();
+}
+function paintBadge() { document.querySelectorAll(".bnav .badge").forEach(b => { b.textContent = unread > 99 ? "99+" : unread; b.hidden = !unread; }); }
+function listen() {
+  if (chan) return;
+  chan = sb.channel("msgs").on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, async pl => {
+    const m = pl.new; if (m.sender_id === profile.id) return;
+    if (cur && m.conversation_id === cur.id && $("#chat").classList.contains("on")) { await addMsgs([m]); markRead(); }
+    else { refreshUnread(); if ($("#msgList").classList.contains("on")) loadConvs(); }
+  }).subscribe();
+}
+async function loadConvs() {
+  const box = $("#convBox");
+  const { data, error } = await sb.rpc("my_conversations");
+  if (error) return none(box, "Could not load messages: " + error.message);
+  if (!data.length) return none(box, "No conversations yet. Open a house and tap Message to start one.");
+  box.replaceChildren(...data.map(c => {
+    const b = el("button", "crow"); b.type = "button";
+    const t = el("div", "ct"), top = el("div", "row");
+    top.append(el("b", "", c.other_name || "User"), el("span", "sub", tfmt(c.last_at)));
+    t.append(top, el("div", "sub", c.house_title), el("div", "pv", c.last_body || (c.last_has_image ? "Photo" : "No messages yet")));
+    b.append(el("div", "av", (c.other_name || "?")[0].toUpperCase()), t);
+    if (c.unread) b.append(el("span", "dot", String(c.unread)));
+    b.onclick = () => openChat(c); return b;
+  }));
+}
+async function addMsgs(list) {
+  const paths = list.filter(m => m.image_path).map(m => m.image_path), map = {};
+  if (paths.length) { const { data } = await sb.storage.from("chat-photos").createSignedUrls(paths, 3600); (data || []).forEach(x => { if (x.signedUrl) map[x.path] = x.signedUrl; }); }
+  const box = $("#cMsgs");
+  list.forEach(m => {
+    const b = el("div", "bub " + (m.sender_id === profile.id ? "me" : "them"));
+    if (m.image_path && map[m.image_path]) { const im = el("img"); im.alt = "Photo"; im.src = map[m.image_path]; b.append(im); }
+    if (m.body) b.append(el("div", "", m.body));
+    b.append(el("small", "", tfmt(m.created_at))); box.append(b);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+async function markRead() {
+  await sb.from("messages").update({ read_at: new Date().toISOString() }).eq("conversation_id", cur.id).neq("sender_id", profile.id).is("read_at", null);
+  refreshUnread();
+}
+async function openChat(c) {
+  cur = { id: c.id, other_id: c.other_id, name: c.other_name || "User", blocked: false };
+  $("#cName").textContent = cur.name; $("#cHouse").textContent = c.house_title; $("#cMsgs").replaceChildren(); $("#cMenu").hidden = true;
+  show("chat");
+  const { data } = await sb.from("messages").select("*").eq("conversation_id", c.id).order("created_at");
+  await addMsgs(data || []); markRead();
+  const bl = await sb.from("blocks").select("blocked_id").eq("blocker_id", profile.id).eq("blocked_id", cur.other_id).maybeSingle();
+  cur.blocked = !!bl.data; $("#cBlock").textContent = cur.blocked ? "Unblock user" : "Block user";
+}
+async function send(part) {
+  const { data, error } = await sb.from("messages").insert({ conversation_id: cur.id, sender_id: profile.id, ...part }).select().single();
+  if (error) return alert("Message not sent. You may not be able to message this person.");
+  await addMsgs([data]);
+}
+$("#cForm").addEventListener("submit", async e => { e.preventDefault(); const body = $("#cText").value.trim(); if (!body) return; $("#cText").value = ""; await send({ body }); });
+$("#cFile").addEventListener("change", async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try {
+    const blob = await shrink(f, 1280), path = cur.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2) + ".jpg";
+    const up = await sb.storage.from("chat-photos").upload(path, blob, { contentType: "image/jpeg" });
+    if (up.error) throw up.error;
+    await send({ image_path: path });
+  } catch (err) { alert("Could not send the photo. Try again."); }
+});
+$("#cMenuBtn").addEventListener("click", e => { e.stopPropagation(); $("#cMenu").hidden = !$("#cMenu").hidden; });
+$("#cBlock").addEventListener("click", async () => {
+  if (cur.blocked) await sb.from("blocks").delete().eq("blocker_id", profile.id).eq("blocked_id", cur.other_id);
+  else { if (!confirm("Block " + cur.name + "? You will not be able to message each other.")) return; await sb.from("blocks").insert({ blocker_id: profile.id, blocked_id: cur.other_id }); }
+  cur.blocked = !cur.blocked; $("#cBlock").textContent = cur.blocked ? "Unblock user" : "Block user";
+});
+$("#cReport").addEventListener("click", async () => {
+  const why = prompt("What is wrong with this conversation?"); if (!why || !why.trim()) return;
+  const { error } = await sb.rpc("report_conversation", { cid: cur.id, why: why.trim() });
+  alert(error ? "Could not send the report." : "Thank you. We will review this conversation.");
+});
+$("#chatBack").addEventListener("click", () => show("msgList"));
+$("#dMsg").addEventListener("click", async () => {
+  const { data, error } = await sb.rpc("start_conversation", { hid: curHouse.id });
+  if (error) return alert("Could not start a chat: " + error.message);
+  openChat({ id: data, other_id: curHouse.landlord_id, other_name: $("#dBiz").textContent, house_title: curHouse.title });
 });
 
 const hv = $("#herovid");
