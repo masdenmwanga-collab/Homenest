@@ -214,7 +214,7 @@ a.btn{display:flex;align-items:center;justify-content:center;text-decoration:non
     <input id="su-phone" type="tel" autocomplete="tel" placeholder="0712 345 678" required>
     <label for="su-email">Email</label>
     <input id="su-email" type="email" autocomplete="email" required>
-    <label for="su-pass">Password (at least 8 characters)</label>
+    <label for="su-pass">Password (at least 8 characters, with letters and numbers)</label>
     <input id="su-pass" type="password" autocomplete="new-password" minlength="8" required>
     <p class="msg" id="su-msg" role="alert"></p>
     <button class="btn primary" id="su-btn" type="submit">Create account</button>
@@ -487,11 +487,16 @@ a.btn{display:flex;align-items:center;justify-content:center;text-decoration:non
 </section>
 
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha256-hZaWX+kY5lZgChtWjToWj1wNPSKmAIhrtvRKZVXbAec=" crossorigin="anonymous"></script>
+<script>if (typeof supabase === "undefined") { document.body.insertAdjacentHTML("afterbegin", '<p style="margin:0;padding:14px 20px;background:#7A1F1F;color:#fff;font-family:system-ui,sans-serif">HomeNest could not load a required file. Check your internet and refresh the page.</p>'); }</script>
 <script>
 const BRAND = "HomeNest"; // placeholder name, change anytime
 const SUPABASE_URL = "https://quugilqgmcbyxqjfzcau.supabase.co";
 const SUPABASE_KEY = "sb_publishable_01Mz7KFORmFhQ7BqpiTsBw_SvVoN_aw";
+if (typeof supabase === "undefined") {
+  document.body.textContent = "HomeNest could not load a required file. Check your internet connection and refresh the page.";
+  throw new Error("Supabase library missing or failed its integrity check");
+}
 const RECOVERY = location.hash.includes("type=recovery");
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = s => document.querySelector(s);
