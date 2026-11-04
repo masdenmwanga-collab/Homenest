@@ -172,6 +172,20 @@ a.btn{display:flex;align-items:center;justify-content:center;text-decoration:non
 .cform .att input{position:absolute;opacity:0;width:1px;height:1px}
 .cform .att:focus-within{outline:3px solid #7FA6FF;outline-offset:2px}
 .cform .send{flex:none;height:46px;padding:0 18px;border-radius:999px;border:0;background:var(--blue);color:#fff;font-weight:700;cursor:pointer}
+.pricecard{border:1.5px solid #2F6BFF;border-radius:16px;padding:10px 14px 14px;margin:0 0 16px}
+.pcrow{display:flex;justify-content:space-between;padding:7px 0;font-size:14px}
+.pcrow span{color:var(--muted)}
+.pctotal{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding:12px 14px;border-radius:12px;background:#0F2A55}
+.pctotal span{font-size:12px;font-weight:700;letter-spacing:.5px;color:#9DBBFF}
+.pctotal b{font-size:20px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 10px;margin:0 0 6px}
+.fact{display:flex;flex-direction:column;gap:2px;min-width:0}
+.fact .fi svg{width:24px;height:24px;color:#8FB0FF;margin-bottom:4px}
+.fact b{font-size:14px;overflow-wrap:anywhere}
+.fact span:last-child{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.vf{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:14px;background:#000}
+.views{display:flex;align-items:center;gap:6px;color:#7FA6FF;font-size:13px;margin:6px 0 0}
+.views svg{width:16px;height:16px}
 .loc{position:relative}
 .loc svg{position:absolute;left:14px;top:16px;width:20px;height:20px;color:var(--muted)}
 .loc input{padding-left:42px}
@@ -331,8 +345,25 @@ a.btn{display:flex;align-items:center;justify-content:center;text-decoration:non
     <textarea id="h-desc" rows="3" maxlength="800" placeholder="Describe the house, the compound, and the neighbourhood"></textarea>
     <label for="h-price">Price (KES per month)</label>
     <input id="h-price" type="number" inputmode="numeric" min="1" placeholder="12000">
+    <label for="h-dep">Deposit (KES, optional)</label>
+    <input id="h-dep" type="number" inputmode="numeric" min="0" placeholder="e.g. 6000">
+    <p class="sub" id="h-total" aria-live="polite"></p>
     <label for="h-area">Location</label>
     <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><input id="h-area" maxlength="60" placeholder="e.g. Juja, Kasarani"></div>
+    <label for="h-land">Nearest landmark (optional)</label>
+    <input id="h-land" maxlength="80" placeholder="e.g. JKUAT main gate">
+    <label for="h-walk">Walking time to it, in minutes (optional)</label>
+    <input id="h-walk" type="number" inputmode="numeric" min="0" max="600" placeholder="e.g. 10">
+    <label for="h-bath">Bathroom</label>
+    <select id="h-bath"><option value="">Not specified</option><option>Private</option><option>Shared</option></select>
+    <label for="h-net">Internet</label>
+    <select id="h-net"><option value="">Not specified</option><option>Included</option><option>Not included</option></select>
+    <label for="h-elec">Electricity</label>
+    <select id="h-elec"><option value="">Not specified</option><option>Tokens</option><option>Postpaid</option><option>Included in rent</option></select>
+    <label for="h-water">Water</label>
+    <select id="h-water"><option value="">Not specified</option><option>Included in rent</option><option>Paid separately</option><option>Borehole</option></select>
+    <label for="h-sec">Security</label>
+    <select id="h-sec"><option value="">Not specified</option><option>Key lock</option><option>Security guard</option><option>CCTV</option><option>None</option></select>
     <fieldset id="h-fac"><legend>Facilities</legend>
       <label class="chip"><input type="checkbox" value="Water"><span>Water</span></label>
       <label class="chip"><input type="checkbox" value="Security"><span>Security</span></label>
@@ -341,6 +372,14 @@ a.btn{display:flex;align-items:center;justify-content:center;text-decoration:non
       <label class="chip"><input type="checkbox" value="Borehole"><span>Borehole</span></label>
       <label class="chip"><input type="checkbox" value="Gated compound"><span>Gated compound</span></label>
       <label class="chip"><input type="checkbox" value="Balcony"><span>Balcony</span></label>
+    </fieldset>
+    <fieldset><legend>Video tour (optional)</legend>
+      <label for="h-ytl">YouTube link</label>
+      <input id="h-ytl" type="url" placeholder="https://youtu.be/...">
+      <label for="h-vfile">Or upload a short video (up to 25 MB)</label>
+      <input id="h-vfile" type="file" accept="video/mp4,video/webm,video/quicktime">
+      <p class="sub" id="h-vidnote"></p>
+      <div id="h-vidrmw" hidden><label class="chip"><input type="checkbox" id="h-vidrm"><span>Remove current video</span></label></div>
     </fieldset>
     <label for="h-phone">Contact phone</label>
     <input id="h-phone" type="tel" placeholder="0712 345 678">
@@ -370,9 +409,10 @@ a.btn{display:flex;align-items:center;justify-content:center;text-decoration:non
     <div class="row"><h1 id="dTitle"></h1><span class="pill" id="dPill"></span></div>
     <div class="dprice" id="dPrice"></div>
     <div class="m" id="dLoc"></div>
+    <div class="views" id="dViews"></div>
     <div class="lrow"><div class="av" id="dAv"></div><div><b id="dBiz"></b><div class="sub" id="dBizSub" style="margin:0"></div></div></div>
     <div class="tabs"><button class="dtab on" data-tab="tabOv">Overview</button><button class="dtab" data-tab="tabFa">Facilities</button><button class="dtab" data-tab="tabRe">Reviews</button></div>
-    <div id="tabOv"><p id="dDesc" style="color:var(--text)"></p><p class="sub" id="dPosted"></p></div>
+    <div id="tabOv"><div class="pricecard" id="dPC" hidden></div><div class="facts" id="dFacts"></div><h2 id="dVidH" style="margin:18px 0 10px" hidden>Video tour</h2><div id="dVid"></div><h2 style="margin:18px 0 8px">About this home</h2><p id="dDesc" style="color:var(--text)"></p><p class="sub" id="dPosted"></p></div>
     <div id="tabFa" hidden><div id="dFac"></div></div>
     <div id="tabRe" hidden>
       <p id="rvSum" style="color:var(--text)"></p>
@@ -628,6 +668,12 @@ const IC = {
   list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
   chat: '<path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1.1-4.4A8 8 0 1 1 21 12z"/>',
+  bath: '<path d="M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-3zM6 12V6a2 2 0 0 1 4 0M7 19l-1 2M17 19l1 2"/>',
+  wifi: '<path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1"/>',
+  bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+  drop: '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
   star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
   heart: '<path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/>',
@@ -690,6 +736,7 @@ function card(h) {
     if (error) return alert("Could not delete. Try again.");
     const paths = (h.photo_urls || []).map(u => u.split("/" + BUCKET + "/")[1]).filter(Boolean);
     if (paths.length) await sb.storage.from(BUCKET).remove(paths);
+    const vp = h.video_url && h.video_url.split("/house-videos/")[1]; if (vp) await sb.storage.from("house-videos").remove([vp]);
     loadListings();
   };
   const ed = el("button", "", "Edit listing"); ed.type = "button"; ed.onclick = () => editHouse(h);
@@ -752,6 +799,14 @@ $("#houseForm").addEventListener("submit", async e => {
   if (!(price > 0)) return say(msg, "Enter the monthly rent.");
   if (!area) return say(msg, "Enter the area.");
   if (!/^(?:\+254|254|0)[17]\d{8}$/.test(phone)) return say(msg, "Enter a Kenyan phone number like 0712 345 678.");
+  const dep = $("#h-dep").value === "" ? null : parseInt($("#h-dep").value, 10);
+  if (dep !== null && !(dep >= 0)) return say(msg, "Enter a valid deposit, or leave it empty.");
+  const wm = $("#h-walk").value === "" ? null : parseInt($("#h-walk").value, 10);
+  if (wm !== null && !(wm >= 0 && wm <= 600)) return say(msg, "Enter the walking time in minutes, or leave it empty.");
+  const link = $("#h-ytl").value.trim(), vf = $("#h-vfile").files[0];
+  if (link && !ytId(link)) return say(msg, "Paste a full YouTube link, or leave it empty.");
+  if (vf && vf.size > 25 * 1024 * 1024) return say(msg, "That video is over 25 MB. Please use a shorter clip.");
+  let videoUrl = editing && !$("#h-vidrm").checked ? (editing.video_url || null) : null;
   say(msg, "Uploading photos…", true); btn.disabled = true;
   try {
     const urls = [...kept];
@@ -762,13 +817,25 @@ $("#houseForm").addEventListener("submit", async e => {
       if (up.error) throw up.error;
       urls.push(sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl);
     }
+    if (vf) {
+      say(msg, "Uploading video…", true);
+      const ext = vf.type === "video/webm" ? "webm" : vf.type === "video/quicktime" ? "mov" : "mp4";
+      const vpath = profile.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2) + "." + ext;
+      const vu = await sb.storage.from("house-videos").upload(vpath, vf, { contentType: vf.type });
+      if (vu.error) throw vu.error;
+      videoUrl = sb.storage.from("house-videos").getPublicUrl(vpath).data.publicUrl;
+    } else if (link) videoUrl = link;
     const facilities = [...document.querySelectorAll("#h-fac input:checked")].map(i => i.value);
-    const row = { title, description: $("#h-desc").value.trim(), house_type: $("#h-type").value, price, area, facilities, contact_phone: phone, photo_urls: urls };
+    const row = { title, description: $("#h-desc").value.trim(), house_type: $("#h-type").value, price, area, facilities, contact_phone: phone, photo_urls: urls, deposit: dep, bathroom: $("#h-bath").value || null, internet: $("#h-net").value || null, electricity: $("#h-elec").value || null, water: $("#h-water").value || null, security: $("#h-sec").value || null, landmark: $("#h-land").value.trim() || null, walk_mins: wm, video_url: videoUrl };
     const { error } = editing ? await sb.from("houses").update(row).eq("id", editing.id) : await sb.from("houses").insert({ landlord_id: profile.id, ...row });
     if (error) throw error;
     if (editing) {
       const gone = (editing.photo_urls || []).filter(u => !urls.includes(u)).map(u => u.split("/" + BUCKET + "/")[1]).filter(Boolean);
       if (gone.length) await sb.storage.from(BUCKET).remove(gone);
+    }
+    if (editing && editing.video_url && editing.video_url !== videoUrl) {
+      const op = editing.video_url.split("/house-videos/")[1];
+      if (op) await sb.storage.from("house-videos").remove([op]);
     }
     editing = null; keep = [];
     $("#houseForm").reset(); picked = []; $("#previews").replaceChildren(); say(msg, "");
@@ -930,7 +997,9 @@ function pcard(h) {
   const r = rate[h.id], b = el("div", "pb"), top = el("div", "row");
   top.append(el("b", "pp", money(h.price) + "/mo"), el("span", "pill " + (h.status === "vacant" ? "v" : "t"), h.status === "vacant" ? "Vacant" : "Taken"));
   const m = el("div", "m"); m.innerHTML = svg("pin"); m.append(h.area + " · " + h.house_type + (h.verified ? " · Verified" : "") + (r ? "  ★ " + (r.s / r.n).toFixed(1) + " (" + r.n + ")" : ""));
-  b.append(el("div", "pt", h.title), top, m); c.append(ph, b);
+  b.append(el("div", "pt", h.title), top, m);
+  if (h.deposit != null) { const mv = el("div", "sub", "Move in: " + money(h.price + h.deposit)); mv.style.margin = "4px 0 0"; b.append(mv); }
+  c.append(ph, b);
   c.onclick = () => openHouse(h); c.onkeydown = e => { if (e.key === "Enter") openHouse(h); };
   return c;
 }
@@ -973,12 +1042,30 @@ async function openHouse(h) {
   const pl = $("#dPill"); pl.textContent = h.status === "vacant" ? "Vacant" : "Taken"; pl.className = "pill " + (h.status === "vacant" ? "v" : "t");
   const lc = $("#dLoc"); lc.innerHTML = svg("pin"); lc.append(h.area + " · " + h.house_type + (h.verified ? " · Verified property" : ""));
   $("#dDesc").textContent = h.description || "No description yet."; $("#dPosted").textContent = "Posted " + dfmt(h.created_at);
+  const pc = $("#dPC"); pc.replaceChildren(); pc.hidden = h.deposit == null;
+  if (h.deposit != null) {
+    const r1 = el("div", "pcrow"), r2 = el("div", "pcrow"), tt = el("div", "pctotal");
+    r1.append(el("span", "", "Rent per month"), el("b", "", money(h.price)));
+    r2.append(el("span", "", "Deposit"), el("b", "", money(h.deposit)));
+    tt.append(el("span", "", "TOTAL TO MOVE IN"), el("b", "", money(h.price + h.deposit)));
+    pc.append(r1, r2, tt);
+  }
+  const F = [["bath", h.bathroom, "Bathroom"], ["wifi", h.internet, "Internet"], ["bolt", h.electricity, "Electricity"], ["drop", h.water, "Water"], ["shield", h.security, "Security"], ["pin", h.walk_mins != null ? h.walk_mins + " mins walk" : null, h.landmark ? "To " + h.landmark : "Distance"]];
+  $("#dFacts").replaceChildren(...F.filter(f => f[1]).map(f => { const d = el("div", "fact"), ic = el("span", "fi"); ic.innerHTML = svg(f[0]); d.append(ic, el("b", "", f[1]), el("span", "", f[2])); return d; }));
+  const vb = $("#dVid"); vb.replaceChildren();
+  if (h.video_url) {
+    const yid = ytId(h.video_url);
+    if (yid) { const fr = el("iframe", "vf"); fr.src = "https://www.youtube-nocookie.com/embed/" + yid; fr.title = "Video tour"; fr.loading = "lazy"; fr.allowFullscreen = true; fr.setAttribute("referrerpolicy", "strict-origin-when-cross-origin"); vb.append(fr); }
+    else if (h.video_url.startsWith(SUPABASE_URL + "/storage/v1/object/public/house-videos/")) { const v = el("video", "vf"); v.controls = true; v.playsInline = true; v.preload = "metadata"; v.src = h.video_url; vb.append(v); }
+  }
+  $("#dVidH").hidden = !vb.childElementCount;
   $("#dFac").replaceChildren(...((h.facilities || []).length ? h.facilities.map(f => el("span", "pill v", f)) : [el("p", "sub", "No facilities listed.")]));
   $("#dCall").href = "tel:" + h.contact_phone.replace(/\s/g, ""); $("#dWa").href = "https://wa.me/" + wa(h.contact_phone);
   $("#dHeartSlot").replaceChildren(heart(h)); refreshHearts();
   document.querySelectorAll("[data-tab]").forEach((x, i) => { x.classList.toggle("on", i === 0); $("#" + x.dataset.tab).hidden = i !== 0; });
   $("#rv-msg").textContent = "";
-  sb.from("house_events").insert({ house_id: h.id, kind: "view" });
+  $("#dViews").replaceChildren();
+  sb.from("house_events").insert({ house_id: h.id, kind: "view" }).then(() => viewStats(h.id));
   const { data: b } = await sb.from("public_profiles").select("*").eq("id", h.landlord_id).maybeSingle();
   const nm = (b && b.business_name) || "Landlord"; $("#dBiz").textContent = nm; $("#dBizSub").textContent = (b && b.verified ? "Verified landlord" : "Landlord") + ((b && b.areas) ? " · Serves " + b.areas : "");
   const av = $("#dAv"); av.replaceChildren();
@@ -1055,6 +1142,7 @@ async function removeHouse(h, then) {
   if (error) return alert("Could not remove it. Try again.");
   const paths = (h.photo_urls || []).map(u => u.split("/" + BUCKET + "/")[1]).filter(Boolean);
   if (paths.length) await sb.storage.from(BUCKET).remove(paths);
+    const vp = h.video_url && h.video_url.split("/house-videos/")[1]; if (vp) await sb.storage.from("house-videos").remove([vp]);
   await audit("Removed listing", h.title); then();
 }
 
@@ -1147,11 +1235,16 @@ function startForm(h) {
   $("#houseForm").reset(); $("#previews").replaceChildren(); $("#h-msg").textContent = ""; renderKeep();
   $("#addTitle").textContent = h ? "Edit listing" : "Create listing";
   $("#h-btn").textContent = h ? "Save changes" : "Publish listing";
+  $("#h-total").textContent = ""; $("#h-vidnote").textContent = ""; $("#h-vidrmw").hidden = true;
+  if (h && h.video_url) { $("#h-vidnote").textContent = "This listing already has a video."; $("#h-vidrmw").hidden = false; }
 }
 function editHouse(h) {
   startForm(h);
   $("#h-type").value = h.house_type; $("#h-title").value = h.title; $("#h-desc").value = h.description || "";
   $("#h-price").value = h.price; $("#h-area").value = h.area; $("#h-phone").value = h.contact_phone;
+  $("#h-dep").value = h.deposit == null ? "" : h.deposit; $("#h-land").value = h.landmark || ""; $("#h-walk").value = h.walk_mins == null ? "" : h.walk_mins;
+  $("#h-bath").value = h.bathroom || ""; $("#h-net").value = h.internet || ""; $("#h-elec").value = h.electricity || ""; $("#h-water").value = h.water || ""; $("#h-sec").value = h.security || "";
+  totalHint();
   document.querySelectorAll("#h-fac input").forEach(i => i.checked = (h.facilities || []).includes(i.value));
   show("addHouse");
 }
@@ -1279,6 +1372,24 @@ $("#dMsg").addEventListener("click", async () => {
   if (error) return alert("Could not start a chat: " + error.message);
   openChat({ id: data, other_id: curHouse.landlord_id, other_name: $("#dBiz").textContent, house_title: curHouse.title });
 });
+
+function ytId(u) {
+  const m = u.match(/^https?:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:[^#]*&)?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+function totalHint() {
+  const pr = parseInt($("#h-price").value, 10), d = parseInt($("#h-dep").value, 10);
+  $("#h-total").textContent = pr > 0 && d >= 0 ? "Total to move in: " + money(pr + d) : "";
+}
+$("#h-price").addEventListener("input", totalHint);
+$("#h-dep").addEventListener("input", totalHint);
+async function viewStats(id) {
+  const { data } = await sb.rpc("house_view_stats", { hid: id });
+  const st = data && data[0];
+  if (!st || !st.v_total || !curHouse || curHouse.id !== id) return;
+  const d = $("#dViews"); d.innerHTML = svg("eye");
+  d.append(st.v_week > 0 ? st.v_week + (st.v_week === 1 ? " view" : " views") + " this week · " + st.v_total + " since listed" : st.v_total + (st.v_total === 1 ? " view" : " views") + " since listed");
+}
 
 const hv = $("#herovid");
 if (hv && matchMedia("(prefers-reduced-motion: reduce)").matches) { hv.removeAttribute("autoplay"); hv.pause(); }
